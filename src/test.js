@@ -1,5 +1,11 @@
-const path = require("path");
-const process = require("process");
+// const db = require("../models/index");
+const toLocalDateTime = require("../helpers/toLocalDateTime");
+const issueAt = toLocalDateTime(new Date());
 
-const basename = path.basename(__dirname);
-console.log(process.env.LANG);
+const live_time = 7;
+const expiredAt = new Date();
+expiredAt.setDate(issueAt.getDate() + live_time);
+
+
+console.log(issueAt);
+console.log(expiredAt);

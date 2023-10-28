@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Parents', {
+    await queryInterface.createTable('RefreshTokens', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,8 +10,8 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED
       },
       user_id: {
+        allowNull: false,
         type: Sequelize.INTEGER.UNSIGNED,
-        unique: true,
         references: {
           model: "users",
           key: "id"
@@ -19,23 +19,25 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-      fullname: {
-        type: Sequelize.STRING
+      live_time: {
+        allowNull: false,
+        type: Sequelize.INTEGER.UNSIGNED
       },
-      check_status: {
-        type: Sequelize.STRING,
+      revoked: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
-      createdAt: {
+      issuedAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      expiredAt: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Parents');
+    await queryInterface.dropTable('RefreshTokens');
   }
 };

@@ -9,13 +9,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasOne(models.Tutor, {
+        foreignKey: "user_id",
+      });
+      User.hasOne(models.Parent, {
+        foreignKey: "user_id",
+      });
+      User.hasOne(models.Admin, {
+        foreignKey: "user_id",
+      });
     }
   }
   User.init(
     {
-      firstName: DataTypes.STRING,
-      lastName: DataTypes.STRING,
+      username: DataTypes.STRING,
       email: DataTypes.STRING,
+      role: DataTypes.ENUM("admin", "tutor", "parent"),
+      password: DataTypes.STRING,
+      gender: DataTypes.ENUM("male", "female", "others"),
+      birth: DataTypes.DATEONLY,
+      phone_number: DataTypes.STRING(20),
+      address: DataTypes.STRING,
+      profile_picture: DataTypes.STRING,
     },
     {
       sequelize,

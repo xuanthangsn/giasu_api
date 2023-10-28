@@ -1,0 +1,172 @@
+[
+  {
+    "type": "get a single item",
+    "requestVerb": "GET",
+    "success": true,
+    "statusCode": 200,
+    "payload": {
+      "id": 10,
+      "name": "shirt",
+      "color": "red",
+      "price": "$23"
+    }
+  },
+
+  {
+    "type": "get multiple items",
+    "requestVerb": "GET",
+    "success": true,
+    "statusCode": 200,
+    "payload": [
+      {
+        "id": 10,
+        "name": "shirt",
+        "color": "red",
+        "price": "$123"
+      },
+      {
+        "id": 11,
+        "name": "coat",
+        "color": "black",
+        "price": "$2300"
+      }
+    ]
+  },
+
+  {
+    "type": "create new item",
+    "requestVerb": "POST",
+    "success": true,
+    "statusCode": 201,
+    "payload": {
+      "message": "The item was created successfully",
+      "data": {
+        "id": 21,
+        "name": "shirt",
+        "color": "begie",
+        "price": "$2300"
+      },
+      "optional_field": ["data"]
+    }
+  },
+
+  {
+    "type": "update an item",
+    "requestVerb": "PUT",
+    "success": true,
+    "statusCode": 200,
+    "payload": {
+      "id": 10,
+      "name": "shirt",
+      "color": "red",
+      "price": "$23"
+    }
+  },
+
+  {
+    "type": "delete an item",
+    "requestVerb": "DELETE",
+    "success": true,
+    "statusCode": 204,
+    "payload": {}
+  },
+
+  {
+    "type": "get an item or an item list",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 404,
+    "payload": {
+      "message": "The item does not exist"
+    }
+  },
+
+  {
+    "type": "request body validation error",
+    "requestVerb": ["PUT", "POST"],
+    "success": false,
+    "statusCode": 400,
+    "payload": {
+      "message": "Validation errors in your request",
+      "errors": [
+        {
+          "message": "Oops! The value is invalid",
+          "code": 34,
+          "field": "email"
+        },
+        {
+          "message": "Oops! The format is not correct",
+          "code": 35,
+          "field": "phoneNumber"
+        }
+      ],
+      "optional_field": ["errors"]
+    }
+  },
+
+  {
+    "type": "get a authentication token",
+    "requestVerb": ["GET", "POST"],
+    "success": true,
+    "statusCode": 200,
+    "payload": {
+      "token": "fdakldjfsdfdfad",
+      "refreshToken": "adfadsfjalsdf",
+      "user": {
+        "id": 123,
+        "email": "xuanthangsn@gmail.com",
+        "username": "xuanthang"
+      }
+    }
+  },
+
+  {
+    "type": "unauthorized",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 401,
+    "payload": {
+      "message": "Authentication credentials were missing or incorrect"
+    }
+  },
+
+  {
+    "type": "forbidden",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 403,
+    "payload": {
+      "message": "The request is understood, but it has been refused or access is not allowed"
+    }
+  },
+
+  {
+    "type": "conflict",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 409,
+    "payload": {
+      "message": "Any message which should help the user to resolve the conflict"
+    }
+  },
+
+  {
+    "type": "too many request",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 429,
+    "payload": {
+      "message": "The request cannot be served due to the rate limit having been exhausted for the resource"
+    }
+  },
+
+  {
+    "type": "internal server error",
+    "requestVerb": ["GET", "POST", "PUT", "DELETE"],
+    "success": false,
+    "statusCode": 500,
+    "payload": {
+      "message": "Something is broken"
+    }
+  }
+]

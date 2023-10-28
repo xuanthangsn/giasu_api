@@ -3,6 +3,7 @@ const express = require("express");
 const logger = require("morgan");
 const db = require("../models/index");
 const user = require("../models/user");
+const appRoute = require("../routers/index");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -15,13 +16,21 @@ app.get("/api/test", (req, res) => {
   res.json("This is test route");
 });
 
-app.post("/users", async (req, res) => {
-  try {
-    var user = await db.User.create({ firstName: "xuan", lastName: "thang" });
-  } catch (error) {
-    console.log(error);
+app.use("/api", appRoute);
+
+app.use((err, req, res, next) => {
+  const status = err.statusCode || 500;
+  // if (status === 500) {
+  //   message = "Something is broken"
+  // } else message = err.message;
+  let resData;
+  if (err.errors) {
+    resData = { message: err.message, errors: err.errors };
+  } else {
+    resData = { message: err.message };
   }
-  res.json(user);
+
+  res.status(status).json(resData);
 });
 
 app.listen(PORT, () => {
