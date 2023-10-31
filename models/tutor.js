@@ -10,20 +10,29 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Tutor.belongsTo(models.User, {
-        foreignKey: "user_id",
+        foreignKey: "userID",
       });
     }
   }
   Tutor.init(
     {
-      user_id: DataTypes.INTEGER.UNSIGNED,
-      fullname: DataTypes.STRING,
-      bio: DataTypes.TEXT,
-      education_background: DataTypes.TEXT,
-      certificate: DataTypes.TEXT,
-      teaching_experience: DataTypes.TEXT,
-      check_status: DataTypes.STRING,
-      availability: DataTypes.TEXT,
+      userID: DataTypes.INTEGER.UNSIGNED,
+      name: DataTypes.STRING,
+      phone: DataTypes.TEXT,
+      school: DataTypes.TEXT,
+      specialized: DataTypes.TEXT,
+      job: DataTypes.TEXT,
+      expTeach: DataTypes.INTEGER,
+      subjectRange: DataTypes.TEXT,
+      classRange: DataTypes.TEXT,
+      skillRange: DataTypes.TEXT,
+      subjectIds: DataTypes.TEXT,
+      schedule: DataTypes.TEXT,
+      description: DataTypes.TEXT,
+      role: DataTypes.STRING,
+      status: DataTypes.STRING,
+      gender: DataTypes.STRING,
+      birth: DataTypes.DATE,
     },
     {
       sequelize,
