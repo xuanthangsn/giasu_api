@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasOne(models.Tutor, {
-        foreignKey: "user_id",
+        foreignKey: "userID",
       });
       User.hasOne(models.Parent, {
         foreignKey: "user_id",
@@ -22,11 +22,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      username: DataTypes.STRING,
+      name: DataTypes.STRING,
       email: DataTypes.STRING,
-      role: DataTypes.ENUM("admin", "tutor", "parent"),
+      role: DataTypes.ENUM("admin", "tutor", "parents"),
       password: DataTypes.STRING,
-      gender: DataTypes.ENUM("male", "female", "others"),
+      gender: DataTypes.ENUM("male", "female", "others", ""),
       birth: DataTypes.DATEONLY,
       phone_number: DataTypes.STRING(20),
       address: DataTypes.STRING,
