@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const logger = require("morgan");
 const db = require("../models/index");
 const user = require("../models/user");
@@ -7,6 +8,8 @@ const appRoute = require("../routers/index");
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(cors());
 
 app.use(function(req, res, next) {
   // res.header("Access-Control-Allow-Origin", "*");
@@ -49,5 +52,5 @@ app.use((err, req, res, next) => {
 
 
 app.listen(PORT, () => {
-  console.info(`App listening on port ${PORT}`);
+  console.info(`App listening on port ${PORT}`);   
 });

@@ -57,6 +57,9 @@ module.exports = {
       otherRequirement: {
         type: Sequelize.TEXT
       },
+      subjectIds: {
+        type: Sequelize.TEXT
+      },
       status: {
         type: Sequelize.STRING
       },
