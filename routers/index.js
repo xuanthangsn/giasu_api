@@ -5,6 +5,8 @@ const tutorRoute = require('./tutor.router')
 const parentsRoute = require('./parents.router')
 const adminRoute = require('./admin.routers')
 const classRoute = require('./class.router')
+const uploadRoute = require('./upload.router')
+const addressRoute = require('./address.router')
 
 const appRoute = express();
 
@@ -13,5 +15,7 @@ appRoute.use('/tutor', tutorRoute);
 appRoute.use('/parents', parentsRoute);
 appRoute.use('/admin', adminRoute);
 appRoute.use('/class', classRoute);
+appRoute.use('/upload', uploadRoute);
+appRoute.use('/address', addressRoute);
 
 module.exports = appRoute;

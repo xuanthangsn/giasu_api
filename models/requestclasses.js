@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     frequency: DataTypes.INTEGER,
     salary: DataTypes.INTEGER,
     otherRequirement: DataTypes.TEXT,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    subjectIds: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'RequestClasses',

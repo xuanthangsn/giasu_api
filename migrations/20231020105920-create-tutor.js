@@ -60,6 +60,9 @@ module.exports = {
       role: {
         type: Sequelize.STRING,
       },
+      address: {
+        type: Sequelize.STRING,
+      },
       status: {
         type: Sequelize.STRING,
       },
@@ -71,6 +74,9 @@ module.exports = {
       },
       address: {
         type: Sequelize.STRING,
+      },
+      avatar: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
