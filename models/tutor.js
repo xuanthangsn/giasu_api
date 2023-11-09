@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
       Tutor.belongsTo(models.User, {
         foreignKey: "userID",
       });
+      Tutor.hasMany(models.Comment, {
+        foreignKey: 'user_id'
+      });
+      Tutor.hasMany(models.Post, {
+        foreignKey: 'user_id'
+      });
     }
   }
   Tutor.init(
