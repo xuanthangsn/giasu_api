@@ -18,6 +18,12 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.Admin, {
         foreignKey: "user_id",
       });
+      User.hasMany(models.Comment, {
+        foreignKey: 'id'
+      });
+      User.hasMany(models.Post, {
+        foreignKey: 'id'
+      });
     }
   }
   User.init(
