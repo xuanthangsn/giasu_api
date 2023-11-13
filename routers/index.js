@@ -9,8 +9,6 @@ const uploadRoute = require('./upload.router');
 const addressRoute = require('./address.router');
 const postRoute = require('./post.router');
 const commentRoute = require('./comment.router');
-const postRoute = require('./post.router');
-const commentRoute = require('./comment.router');
 
 const appRoute = express();
 

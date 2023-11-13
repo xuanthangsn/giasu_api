@@ -4,11 +4,14 @@ module.exports = (sequelize, DataTypes) => {
 	class Post extends Model {
 		static associate(models) {
 			Post.belongsTo(models.User, {
-				foreignKey: 'authorP_id',
+				foreignKey: 'user_id',
 				targetKey: 'id',
 			});
 			Post.hasMany(models.Comment, {
-				foreignKey: 'id',
+				foreignKey: 'post_id',
+			});
+			Post.hasMany(models.Vote, {
+				foreignKey: 'post_id',
 			});
 		}
 	}
@@ -24,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			post_title: DataTypes.STRING,
 			post_content: DataTypes.TEXT,
-			authorP_id: DataTypes.INTEGER.UNSIGNED,
+			user_id: DataTypes.INTEGER.UNSIGNED,
+			author: DataTypes.STRING,
 		},
 		{
 			sequelize,

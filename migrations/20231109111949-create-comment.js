@@ -10,7 +10,7 @@ module.exports = {
 				type: Sequelize.INTEGER.UNSIGNED,
 				field: 'comment_id',
 			},
-			authorC_id: {
+			user_id: {
 				type: Sequelize.INTEGER.UNSIGNED,
 				references: {
 					model: 'users',
@@ -18,6 +18,10 @@ module.exports = {
 				},
 				onDelete: 'CASCADE',
 				onUpdate: 'CASCADE',
+			},
+			author: {
+				type: Sequelize.STRING,
+				allowNull: false,
 			},
 			post_id: {
 				type: Sequelize.INTEGER.UNSIGNED,
@@ -34,11 +38,11 @@ module.exports = {
 			},
 			createdAt: {
 				allowNull: false,
-				type: Sequelize.DATE,
+				type: Sequelize.DATEONLY,
 			},
 			updatedAt: {
 				allowNull: false,
-				type: Sequelize.DATE,
+				type: Sequelize.DATEONLY,
 			},
 		});
 	},
