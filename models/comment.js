@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
 			comment_content: DataTypes.STRING,
 			user_id: DataTypes.INTEGER.UNSIGNED,
 			post_id: DataTypes.INTEGER,
-			author: DataTypes.STRING,
 		},
 		{
 			sequelize,
@@ -39,30 +38,3 @@ module.exports = (sequelize, DataTypes) => {
 	);
 	return Comment;
 };
-
-/*
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-      autoIncrement: true
-    },
-    post_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Post',
-        key: 'id'
-      }
-    },
-    user_id:  {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'user',
-        key: 'id'
-      }
-    },
-    comment: DataTypes.STRING,
-     parent_comment_id: DataTypes.INTEGER -1 
-  */

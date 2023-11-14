@@ -19,10 +19,6 @@ module.exports = {
 				onDelete: 'CASCADE',
 				onUpdate: 'CASCADE',
 			},
-			author: {
-				type: Sequelize.STRING,
-				allowNull: false,
-			},
 			post_id: {
 				type: Sequelize.INTEGER.UNSIGNED,
 				references: {

@@ -1,165 +1,179 @@
 const db = require('../models/index');
 
-module.exports = {
-	// auth ??
-	create: async (req, res) => {
-		try {
-			const newPost = await db.Comment.create({
-				post_id: req.body.post_id,
-				comment_content: req.body.comment_content,
-				user_id: req.body.user_id, // req.session.user_id
-				author: req.body.author,
-			});
-			return res.status(201).json(newPost);
-		} catch (err) {
-			console.log(err);
-			return res.status(500).json(err);
-		}
-	},
+const createComment = async (req, res) => {
+	try {
+		const { post_id, comment_content, user_id } = req.body;
+		const comment = await db.Comment.create({
+			post_id: post_id,
+			comment_content: comment_content,
+			user_id: user_id,
+		});
+		return res.status(201).json(comment);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
 
-	getAll: async (req, res) => {
-		try {
-			const commentData = await db.Comment.findAll({});
-			res.json(commentData);
-		} catch (err) {
-			res.status(500).json(err);
-		}
-	},
-
-	update: async (req, res) => {
-		const comment_content = req.body.comment_content;
-		const comment_id = req.params.comment_id;
-
-		try {
-			await db.Comment.findOne({
-				where: {
-					comment_id: comment_id,
+const findAllComment = async (req, res) => {
+	try {
+		const commentData = await db.Comment.findAll({
+			attributes: ['comment_content', 'comment_id', 'post_id'],
+			include: [
+				{
+					model: db.User,
+					attributes: ['name', 'id'],
 				},
+			],
+		});
+		res.json(commentData);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
 
-				attributes: ['comment_content'],
-			}).then((commentContent) => {
-				if (commentContent) {
-					db.Comment.update(
-						{
-							comment_content: comment_content,
-						},
+const updateComment = async (req, res) => {
+	try {
+		const { comment_content } = req.body;
+		const { comment_id } = req.params;
 
-						{
-							where: { comment_id: comment_id },
-						}
-					);
-					res.status(200).json({
-						comment: commentContent,
-						updatedComment: comment_content,
-					});
-				} else {
-					res.status(404).json({ message: 'No comment found with this id' });
-				}
-			});
-		} catch (err) {
-			console.log(err);
-			return res.status(500).json(err);
-		}
-	},
+		await db.Comment.findOne({
+			where: {
+				comment_id,
+			},
 
-	delete: async (req, res) => {
-		try {
-			await db.Comment.findOne({
-				where: {
-					comment_id: req.params.comment_id,
-				},
+			attributes: ['comment_content'],
+		}).then((comment) => {
+			if (comment) {
+				db.Comment.update(
+					{
+						comment_content: comment_content,
+					},
 
-				attributes: ['comment_content', 'user_id'],
-			}).then((commentContent) => {
-				if (commentContent) {
-					db.Comment.destroy({
-						where: { comment_id: req.params.comment_id },
-					});
-
-					res.status(200).json({
-						deletedComment: commentContent,
-					});
-				} else {
-					res.status(404).json({ message: 'No comment found with this id' });
-				}
-			});
-		} catch (err) {
-			console.log(err);
-			return res.status(500).json(err);
-		}
-	},
-
-	vote: async (req, res) => {
-		try {
-			const post_id = null;
-			const comment_id = req.params.comment_id;
-			const voteType = req.params.vote_type;
-
-			const vote = await db.Vote.findOne({
-				where: {
-					comment_id: comment_id,
-					user_id: req.body.user_id,
-				},
-				attributes: ['vote_type'],
-			});
-
-			if (vote) {
-				if (vote.vote_type == voteType) {
-					db.Vote.destroy({
-						where: { comment_id: comment_id },
-					});
-					return res
-						.status(200)
-						.json({ message: 'Vote deleted', comment_id: comment_id });
-				} else {
-					db.Vote.update(
-						{ vote_type: voteType },
-
-						{ where: { comment_id: comment_id } }
-					);
-
-					return res.status(200).json({
-						originalVote: vote.vote_type,
-						updatedVote: voteType,
-					});
-				}
+					{
+						where: { comment_id },
+					}
+				);
+				res.status(200).json({
+					originalComment: comment.comment_content,
+					updatedComment: comment_content,
+				});
 			} else {
-				db.Vote.create({
-					vote_type: voteType,
-					comment_id: comment_id,
-					user_id: req.body.user_id,
-					post_id: post_id,
+				res.status(404).json({ message: 'No comment found with this id' });
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
+
+const deleteComment = async (req, res) => {
+	try {
+		const { comment_id } = req.params;
+		await db.Comment.findOne({
+			where: {
+				comment_id,
+			},
+			attributes: ['comment_content', 'user_id'],
+		}).then((comment) => {
+			if (comment) {
+				db.Comment.destroy({
+					where: { comment_id },
 				});
 				res.status(200).json({
-					vote_type: voteType,
-					comment_id: comment_id,
-				});
-			}
-		} catch (err) {
-			console.log(err);
-			res.status(500).json(err);
-		}
-	},
-
-	deleteVote: async (req, res) => {
-		try {
-			const vote = await db.Vote.findOne({
-				where: {
-					comment_id: req.params.comment_id,
-					user_id: req.body.user_id,
-				},
-			});
-
-			if (vote) {
-				await db.Vote.destroy({
-					where: { vote_id: req.params.vote_id },
+					deletedComment: comment,
 				});
 			} else {
-				res.status(404).json({ message: 'No vote found with this id' });
+				res.status(404).json({ message: 'No comment found with this id' });
 			}
-		} catch (err) {
-			console.log(err);
-			res.status(500).json(err);
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
+
+const createCommentVote = async (req, res) => {
+	try {
+		const { comment_id, vote_type } = req.params;
+		const { user_id } = req.body;
+		const post_id = null;
+
+		const Vote = await db.Vote.findOne({
+			where: { comment_id, user_id },
+			attributes: ['vote_type'],
+		});
+
+		if (Vote) {
+			if (Vote.vote_type == vote_type) {
+				await db.Vote.destroy({ where: { comment_id } });
+
+				res.status(200).json({
+					message: 'Vote deleted',
+					vote_type: vote_type,
+					comment_id: comment_id,
+				});
+			} else {
+				await db.Vote.update(
+					{ vote_type: vote_type },
+					{ where: { comment_id } }
+				);
+
+				res.status(200).json({
+					originalVote: Vote.vote_type,
+					updatedVote: vote_type,
+				});
+			}
+		} else {
+			await db.Vote.create({
+				vote_type: vote_type,
+				comment_id: comment_id,
+				user_id: user_id,
+				post_id: post_id,
+			});
+
+			res.status(200).json({
+				vote_type: vote_type,
+				comment_id: comment_id,
+			});
 		}
-	},
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
+
+const deleteCommentVote = async (req, res) => {
+	try {
+		const { comment_id, user_id } = req.body;
+
+		const Vote = await db.Vote.findOne({
+			where: {
+				comment_id,
+				user_id,
+			},
+		});
+
+		if (Vote) {
+			await db.Vote.destroy({
+				where: { vote_id: Vote.vote_id },
+			});
+		} else {
+			res.status(404).json({ message: 'No vote found' });
+		}
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
+
+module.exports = {
+	createComment,
+	createCommentVote,
+	deleteComment,
+	deleteCommentVote,
+	findAllComment,
+	updateComment,
 };

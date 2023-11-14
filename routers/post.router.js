@@ -2,13 +2,13 @@ const router = require('express').Router();
 
 const postController = require('../controllers/post.controller');
 
-router.get('/', postController.findAll);
-router.post('/create', postController.create);
-router.put('/:post_id', postController.update);
-router.delete('/:post_id', postController.delete);
-router.get('/:post_id', postController.findOne);
+router.get('/', postController.findAllPost);
+router.post('/create', postController.createPost);
+router.put('/:post_id', postController.updatePost);
+router.delete('/:post_id', postController.deletePost);
+router.get('/:post_id', postController.findOnePost);
 
-router.post('/:post_id/:vote_type', postController.vote);
-router.delete('/:post_id/:vote_type', postController.delete);
+router.post('/:post_id/:vote_type', postController.createPostVote);
+router.delete('/:post_id/:vote_type', postController.deletePostVote);
 
 module.exports = router;

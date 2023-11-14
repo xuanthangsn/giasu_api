@@ -28,7 +28,6 @@ module.exports = (sequelize, DataTypes) => {
 			post_title: DataTypes.STRING,
 			post_content: DataTypes.TEXT,
 			user_id: DataTypes.INTEGER.UNSIGNED,
-			author: DataTypes.STRING,
 		},
 		{
 			sequelize,
@@ -38,28 +37,3 @@ module.exports = (sequelize, DataTypes) => {
 	);
 	return Post;
 };
-
-/*
-id: {
-  type: DataTypes.INTEGER,
-  allowNull: false,
-  primaryKey: true,
-  autoIncrement: true,
-  defaultValue: 1,
-},
-title: {
-  type: DataTypes.STRING,
-  allowNull: false
-},
-content: {
-  type: DataTypes.TEXT,
-  allowNull: true
-},
-user_id:  {
-  type: DataTypes.INTEGER,
-  references: {
-    model: 'user',
-    key: 'id'
-  }
-}
-*/
