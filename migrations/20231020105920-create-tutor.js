@@ -13,7 +13,6 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED,
         unique: true,
         allowNull: false,
-        // primaryKey: true,
         references: {
           model: "users",
           key: "id",

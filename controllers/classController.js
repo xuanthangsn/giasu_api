@@ -86,7 +86,11 @@ const createClass = async (req, res, next) => {
             err.statusCode = 500;
         }
         next(err)
-    }
+    }   
 }
 
-module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus }
+const getContract = async (req, res, next) => {
+
+} 
+
+module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus, getContract}
