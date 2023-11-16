@@ -3,8 +3,9 @@ const puppeteer = require("puppeteer");
 const path = require("path");
 
 module.exports = {
-  generatePdfContract: async (outputPath, content) => {
-    const browser = await puppeteer.launch({ headless: "new" });
+  generatePdfContract: async (content) => {
+    try {
+      const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
     const pathToTemplate = path.join(__dirname, "contract-template.html");
     const htmlContent = fs.readFileSync(pathToTemplate, "utf-8");
@@ -26,12 +27,18 @@ module.exports = {
       document.getElementById("class-price").textContent = content.class.price;
       document.getElementById("class-time-per-day").textContent = content.class.time_per_day;
     }, content);
-    await page.pdf({
-      path: outputPath,
+    const pdfBuffer = await page.pdf({
       format: "A4",
       margin: { top: "2cm", right: "2cm", bottom: "2cm", left: "2cm" },
     });
 
     await browser.close();
+
+    return pdfBuffer;
+    } catch (err) {
+      err.statusCode = 500;
+      err.errors = ["Failed to generate pdf contract"];
+      throw err;
+    }
   },
 };
