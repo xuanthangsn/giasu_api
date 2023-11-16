@@ -6,8 +6,26 @@ const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require('sequelize');
 
 const getRequestClasses = async(req, res, next) => {
+    const {subjectArrays, gradesArray, skillsArrays} = req.body
+    let subjects = subjectArrays.map(subject => {
+        return 'subject = ' + `'${subject}'`
+    })
+    let grades = gradesArray.map(grade => {
+        switch (grade) {
+            case 'Cấp 1': return `grade = 'Lớp 1' OR grade = 'Lớp 2' OR grade = 'Lớp 3' OR grade = 'Lớp 4' OR grade = 'Lớp 5'`;
+            case 'Cấp 2': return `grade = 'Lớp 6' OR grade = 'Lớp 7' OR grade = 'Lớp 8' OR grade = 'Lớp 9'`;
+            case 'Cấp 3': return `grade = 'Lớp 10' OR grade = 'Lớp 11' OR grade = 'Lớp 12'`;
+        }
+    })
+    let skills = skillsArrays.map(skill => {
+        return 'skill = ' + `'${skill}'`
+    })
+    const query = `${subjects.length > 0 ? ' AND (' + subjects.join(' OR ') + ')' : ''}${grades.length > 0 ? ' AND (' + grades.join(' OR ') + ')': ''}${skills.length > 0 ? ' AND (' + skills.join(' OR ') + ')' : ''}`
+    // console.log(`SELECT * FROM requestClasses `)
+    console.log(query)
     try {
-        const classes = await db.RequestClasses.findAll({})
+        let classes
+        classes = await db.sequelize.query(`SELECT * FROM requestClasses WHERE status = 'confirming'${query}`)
         res.json({
             classes
         })
