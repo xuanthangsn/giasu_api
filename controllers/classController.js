@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require('sequelize');
+const { generatePdfContract } = require("../services/contract-generator.service/index");
 
 const getRequestClasses = async(req, res, next) => {
     const {subjectArrays, gradesArray, skillsArrays} = req.body
@@ -104,7 +105,46 @@ const createClass = async (req, res, next) => {
             err.statusCode = 500;
         }
         next(err)
-    }
+    }   
 }
 
-module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus }
+const getContract = async (req, res, next) => {
+    // lay thong tin ve lop
+    const classInformation = {
+        tutor: {
+            name: "Tran Xuan Thang",
+            phone: "0962597636",
+            birth: "26/12/2002",
+            address: "Ngo 150, Hoa Bang, Cau Giay, Ha Noi",
+            job: "Student"
+        },
+        parent: {
+            name: "Hoang Phuong Linh",
+            phone: "0833020475",
+            address: "Hoang Mai, Cau Giay, Ha Noi"
+        },
+        class: {
+            subject: "Toan 7",
+            schedule: "2b/tuan",
+            price: "150k/buoi",
+            time_per_day: "2h/buoi"
+        }
+    };
+
+    try {
+        const pdfBuffer = await generatePdfContract(classInformation);
+         res.setHeader("Content-Type", "application/pdf");
+         res.setHeader(
+           "Content-Disposition",
+           "attachment; filename=contract.pdf"
+         );
+         res.send(pdfBuffer);
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        throw err;
+    }
+} 
+
+module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus, getContract}

@@ -21,7 +21,7 @@ const tutor_register = async(req, res, next) => {
                     if (!err.statusCode) {
                         err.statusCode = 501;
                     }
-                    next(err);
+                    next(err);  
                 }
             })
         }
