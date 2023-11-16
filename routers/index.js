@@ -7,6 +7,8 @@ const adminRoute = require('./admin.routers')
 const classRoute = require('./class.router')
 const uploadRoute = require('./upload.router')
 const addressRoute = require('./address.router')
+const postRoute = require("./post.router");
+const commentRoute = require("./comment.router");
 
 const appRoute = express();
 
@@ -17,5 +19,8 @@ appRoute.use('/admin', adminRoute);
 appRoute.use('/class', classRoute);
 appRoute.use('/upload', uploadRoute);
 appRoute.use('/address', addressRoute);
+appRoute.use("/post", postRoute);
+appRoute.use("/comment", commentRoute);
+
 
 module.exports = appRoute;
