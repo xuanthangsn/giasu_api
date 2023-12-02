@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { Sequelize } = require("sequelize");
+const { QueryTypes } = require('sequelize');
 // const Op = require('@sequelize/core');
 const Op = Sequelize.Op
 
@@ -88,7 +89,7 @@ const getSubjectsOfTutors = async (req, res, next) => {
 const getConfirmedTutors = async (req, res, next) => {
     
     try {
-        const tutors = await db.Tutor.findAll({where: {status: 'confirmed'}})
+        const tutors = await db.sequelize.query(`select * from tutors where status = 'confirmed'`, {type: QueryTypes.SELECT})
         res.json({
             tutors
         })
@@ -105,7 +106,12 @@ const applyClass = async (req, res, next) => {
     try {
         const tutor = await db.Tutor.findOne({where: {userID: tutorId}})
         const requestClass = await db.RequestClasses.findOne({where: {id: classId}})
-
+        // console.log('gender: ' + tutor.gender)
+        // console.log('gender: ' + requestClass.requiredGender)
+        // console.log(tutor.gender == requestClass.requiredGender)
+        // console.log('schedule: ' + tutor.subjectIds.split(','))
+        // console.log('schedule: ' + requestClass.subjectIds)
+        // console.log(tutor.subjectIds.split(',').includes(requestClass.subjectIds))
         // gender - subjectIds - schedule
         if (tutor.gender == requestClass.requiredGender && tutor.subjectIds.split(',').includes(requestClass.subjectIds)) {
             let countSameSchedule = 0
@@ -114,7 +120,9 @@ const applyClass = async (req, res, next) => {
                     countSameSchedule++
                 }
             })
-            if (countSameSchedule > requestClass.frequency) {
+            console.log("frequency: " + countSameSchedule)
+            console.log("frequency: " + requestClass.frequency)
+            if (countSameSchedule >= requestClass.frequency) {
                 const tutorToClass = await db.tutor_request_class.create({
                     tutor_id: tutorId,
                     request_class_id: classId
@@ -125,6 +133,7 @@ const applyClass = async (req, res, next) => {
                     total: countSameSchedule
                 })
             } else {
+                
                 res.json({
                     tutor, 
                     requestClass,

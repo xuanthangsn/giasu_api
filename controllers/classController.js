@@ -23,10 +23,10 @@ const getRequestClasses = async(req, res, next) => {
     })
     const query = `${subjects.length > 0 ? ' AND (' + subjects.join(' OR ') + ')' : ''}${grades.length > 0 ? ' AND (' + grades.join(' OR ') + ')': ''}${skills.length > 0 ? ' AND (' + skills.join(' OR ') + ')' : ''}`
     // console.log(`SELECT * FROM requestClasses `)
-    console.log(query)
+    // console.log(query)
     try {
         let classes
-        classes = await db.sequelize.query(`SELECT * FROM requestClasses WHERE status = 'confirming'${query}`)
+        classes = await db.sequelize.query(`SELECT * FROM requestClasses WHERE status = 'confirming'${query}`, { type: QueryTypes.SELECT })
         res.json({
             classes
         })
@@ -70,6 +70,7 @@ const updateRequestClassStatus = async (req, res, next) => {
 //     }
 // }
 
+
 const getTutorsByRequestClassId = async (req, res, next) => {
     const {id} = req.body
     try {
@@ -109,27 +110,31 @@ const createClass = async (req, res, next) => {
 }
 
 const getContract = async (req, res, next) => {
+    const classInformation = req.body
+    // const classInformation = {tutor, parent, classInfo}
     // lay thong tin ve lop
-    const classInformation = {
-        tutor: {
-            name: "Tran Xuan Thang",
-            phone: "0962597636",
-            birth: "26/12/2002",
-            address: "Ngo 150, Hoa Bang, Cau Giay, Ha Noi",
-            job: "Student"
-        },
-        parent: {
-            name: "Hoang Phuong Linh",
-            phone: "0833020475",
-            address: "Hoang Mai, Cau Giay, Ha Noi"
-        },
-        class: {
-            subject: "Toan 7",
-            schedule: "2b/tuan",
-            price: "150k/buoi",
-            time_per_day: "2h/buoi"
-        }
-    };
+    // const classInformation = {
+    //     tutor: {
+            // name: "Tran Xuan Thang",
+            // phone: "0962597636",
+            // birth: "26/12/2002",
+            // address: "Ngo 150, Hoa Bang, Cau Giay, Ha Noi",
+            // job: "Student"
+    //     },
+    //     parent: {
+            // name: "Hoang Phuong Linh",
+            // phone: "0833020475",
+            // address: "Hoang Mai, Cau Giay, Ha Noi"
+    //     },
+    //     class: {
+            // subject: "Toan 7",
+            // schedule: "2b/tuan",
+            // price: "150k/buoi",
+            // time_per_day: "2h/buoi"
+    //     }
+    // };
+
+    console.log(classInformation)
 
     try {
         const pdfBuffer = await generatePdfContract(classInformation);
@@ -147,4 +152,19 @@ const getContract = async (req, res, next) => {
     }
 } 
 
-module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus, getContract}
+const getRequestClassByRequestId = async (req, res, next) => {
+    const {id} = req.body
+    try {
+        const requestClass = await db.RequestClasses.findOne({where: {id: id}})
+        res.json({
+            requestClass
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+}
+
+module.exports = { getRequestClasses, getTutorsByRequestClassId, createClass, updateRequestClassStatus, getContract, getRequestClassByRequestId}

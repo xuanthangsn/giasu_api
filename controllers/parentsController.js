@@ -6,7 +6,7 @@ const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require('sequelize');
 
 const requestClass = async(req, res, next) => {
-    const { parentID, parentName, phone, studentGender, requiredGender, address, grade, subject, skill, studentCharacter, schedule, frequency, salary, otherRequirement, status } = req.body
+    const { parentID, parentName, phone, studentGender, requiredGender, address, detailAddress, grade, subject, skill, studentCharacter, schedule, frequency, salary, otherRequirement, status } = req.body
     let subjectIds 
     try{
         const id = await db.Subject.findOne({where: {name: subject, grade: grade}})
@@ -19,6 +19,7 @@ const requestClass = async(req, res, next) => {
                 studentGender, 
                 requiredGender, 
                 address, 
+                detailAddress,
                 grade, 
                 subject, 
                 skill, 
@@ -63,6 +64,7 @@ const getRequestClassesOfParents = async (req, res, next) => {
             WHERE parentID = ${parentID} AND requestclasses.status='confirming'`,
             {type: QueryTypes.SELECT}
         )
+        console.log(classes)
         res.json({
             classes
         })
@@ -74,6 +76,21 @@ const getRequestClassesOfParents = async (req, res, next) => {
     }
 }
 
+const getClasssById = async (req, res, next) => {
+    const {id} = req.body
+    try {
+        const classes = await db.Class.findAll({where: {parent_id: id}})
+        res.json({
+            classes
+        })
+    } catch{
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+}
 
 
-module.exports = { requestClass, getRequestClasses, getRequestClassesOfParents }
+
+module.exports = { requestClass, getRequestClasses, getRequestClassesOfParents, getClasssById }

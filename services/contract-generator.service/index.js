@@ -10,6 +10,8 @@ module.exports = {
     const pathToTemplate = path.join(__dirname, "contract-template.html");
     const htmlContent = fs.readFileSync(pathToTemplate, "utf-8");
 
+    
+
     await page.setContent(htmlContent);
     await page.evaluate((content) => {
       document.getElementById("tutor-name").textContent = content.tutor.name;
@@ -22,10 +24,10 @@ module.exports = {
       document.getElementById("parent-phone").textContent = content.parent.phone;
       document.getElementById("parent-address").textContent = content.parent.address;
 
-      document.getElementById("class-subject").textContent = content.class.subject;
-      document.getElementById("class-schedule").textContent = content.class.schedule;
-      document.getElementById("class-price").textContent = content.class.price;
-      document.getElementById("class-time-per-day").textContent = content.class.time_per_day;
+      document.getElementById("class-subject").textContent = content.classInfo.subject;
+      document.getElementById("class-schedule").textContent = content.classInfo.schedule;
+      document.getElementById("class-price").textContent = content.classInfo.price;
+      document.getElementById("class-time-per-day").textContent = content.classInfo.time_per_day;
     }, content);
     const pdfBuffer = await page.pdf({
       format: "A4",

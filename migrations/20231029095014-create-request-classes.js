@@ -33,6 +33,9 @@ module.exports = {
       address: {
         type: Sequelize.TEXT
       },
+      detailAddress: {
+        type: Sequelize.TEXT
+      },
       grade: {
         type: Sequelize.STRING
       },
