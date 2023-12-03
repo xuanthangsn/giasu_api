@@ -9,12 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      // id: {
-      //   primaryKey: true,
-      //   autoIncrement: true,
-      //   allowNull: false,
-      //   type: Sequelize.INTEGER
-      // },
       parentID: {
         type: Sequelize.INTEGER
       },
