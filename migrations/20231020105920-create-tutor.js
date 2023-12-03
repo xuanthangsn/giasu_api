@@ -38,12 +38,6 @@ module.exports = {
       job: {
         type: Sequelize.STRING,
       },
-      subjectRange: {
-        type: Sequelize.TEXT,
-      },
-      classRange: {
-        type: Sequelize.TEXT,
-      },
       skillRange: {
         type: Sequelize.TEXT,
       },
@@ -56,24 +50,6 @@ module.exports = {
       description: {
         type: Sequelize.TEXT,
       },
-      // role: {
-      //   type: Sequelize.STRING,
-      // },
-      // address: {
-      //   type: Sequelize.STRING,
-      // },
-      // status: {
-      //   type: Sequelize.STRING,
-      // },
-      // gender: {
-      //   type: Sequelize.STRING,
-      // },
-      // birth: {
-      //   type: Sequelize.DATE,
-      // },
-      // address: {
-      //   type: Sequelize.STRING,
-      // },
       avatar: {
         type: Sequelize.TEXT
       },
