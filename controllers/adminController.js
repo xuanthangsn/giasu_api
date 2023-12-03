@@ -1,39 +1,50 @@
 require("dotenv").config();
 const db = require("../models/index");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const toLocalDateTime = require("../helpers/toLocalDateTime");
 
-const getConfirmingTutor = async(req, res, next) => {
-    try {
-        const tutors = await db.Tutor.findAll({ where: {status: 'confirming'} })
-        res.json({
-            tutors
-        })
-    } catch (err) {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
+// use case: get all tutor where status="confirming"
+// grant access to: admin
+const getConfirmingTutor = async (req, res, next) => {
+  try {
+    const tutors = await db.Tutor.findAll({ where: { status: "confirming" } });
+    const tutorData = [];
+    for (const tutor of tutors) {
+      const user = await db.User.findOne({ where: { id: tutor.userID } });
+      tutorData.push({
+        ...tutor,
+        role: user.role,
+        gender: user.gender,
+        birth: user.birth,
+        phone: user.phone,
+        adderss: user.address,
+      });
     }
+    res.json({
+      tutors: tutorData
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
 
-}
-
+// use case: update the specified tutor status
+// grant access to: admin
 const updateTutorStatus = async (req, res, next) => {
-    const { userID, status} = req.body
-    try {
-        const tutor = await db.Tutor.findOne({where: {userID: userID}})
-        await tutor.update({status})
-        res.json({
-            message: 'update tutor status successfully'
-        })
-
-    } catch (err) {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
+  const { userID, status } = req.body;
+  try {
+    const tutor = await db.Tutor.findOne({ where: { userID: userID } });
+    await tutor.update({ status });
+    res.json({
+      message: "update tutor status successfully",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
     }
-}
+    next(err);
+  }
+};
 
-module.exports = { getConfirmingTutor, updateTutorStatus }
+module.exports = { getConfirmingTutor, updateTutorStatus };

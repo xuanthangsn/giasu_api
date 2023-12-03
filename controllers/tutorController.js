@@ -142,9 +142,21 @@ const getSubjectsOfTutors = async (req, res, next) => {
 const getConfirmedTutors = async (req, res, next) => {
     
     try {
-        const tutors = await db.sequelize.query(`select * from tutors where status = 'confirmed'`, {type: QueryTypes.SELECT})
+        const tutors = await db.sequelize.query(`select * from tutors where status = 'confirmed'`, { type: QueryTypes.SELECT });
+        const tutorData = [];
+        for (const tutor of tutors) {
+          const user = await db.User.findOne({ where: { id: tutor.userID } });
+          tutorData.push({
+            ...tutor,
+            role: user.role,
+            gender: user.gender,
+            birth: user.birth,
+            phone: user.phone,
+            adderss: user.address,
+          });
+        }
         res.json({
-            tutors
+            tutors: tutorData
         })
     } catch (err) {
         if (!err.statusCode) {
