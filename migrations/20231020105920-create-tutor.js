@@ -23,9 +23,6 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      // phone: {
-      //   type: Sequelize.TEXT,
-      // },
       school: {
         type: Sequelize.TEXT,
       },
@@ -51,6 +48,9 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       avatar: {
+        type: Sequelize.TEXT
+      },
+      status: {
         type: Sequelize.TEXT
       },
       createdAt: {
