@@ -1,147 +1,351 @@
-const db = require("../models/index");
+const db = require('../models/index');
+
+const createPost = async (req, res) => {
+	const { post_title, post_content, user_id } = req.body;
+
+	try {
+		const post = await db.Post.create({
+			post_title: post_title,
+			post_content: post_content,
+			user_id: user_id,
+		});
+		return res.status(201).json(post);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
+
+const updatePost = async (req, res) => {
+	const { post_content } = req.body;
+	const { post_id } = req.params;
+
+	try {
+		await db.Post.findOne({
+			where: {
+				post_id,
+			},
+			attributes: ['post_content'],
+		}).then((post) => {
+			if (post) {
+				db.Post.update({ post_content: post_content }, { where: { post_id } });
+				res.status(200).json({
+					post: post.post_content,
+					updatedPost: post_content,
+				});
+			} else {
+				res.status(404).json({ message: 'No post found with this id' });
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
+
+const deletePost = async (req, res) => {
+	const { post_id } = req.params;
+
+	try {
+		await db.Post.findOne({
+			where: {
+				post_id,
+			},
+
+			attributes: ['post_title', 'post_content', 'user_id'],
+		}).then((post) => {
+			if (post) {
+				db.Post.destroy({
+					where: { post_id },
+				});
+
+				res.status(200).json({
+					deletedPost: post,
+				});
+			} else {
+				res.status(404).json({ message: 'No post found with this id' });
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json(err);
+	}
+};
+
+const findAllPost = async (req, res) => {
+	try {
+		const postData = await db.Post.findAll({
+			attributes: ['post_title', 'post_content', 'createdAt'],
+			include: [
+				{
+					model: db.User,
+					attributes: ['name', 'id'],
+				},
+			],
+			order: [['createdAt', 'DESC']],
+		});
+
+		if (postData) {
+			res.status(200).json(postData);
+		} else {
+			res.status(404).json({ message: 'No post found' });
+		}
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const findOnePost = async (req, res) => {
+	try {
+		const { post_id } = req.params;
+
+		const postData = await db.Post.findOne({
+			where: { post_id },
+			attributes: ['post_title', 'post_content', 'createdAt'],
+			include: [
+				{
+					model: db.User,
+					attributes: ['name', 'id'],
+				},
+				{
+					model: db.Vote,
+					attributes: [
+						[
+							db.sequelize.fn(
+								'COUNT',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "like" THEN 1 END'
+								)
+							),
+							'likeCount',
+						],
+						[
+							db.sequelize.fn(
+								'COUNT',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "dislike" THEN 1 END'
+								)
+							),
+							'dislikeCount',
+						],
+					],
+				},
+			],
+		});
+
+		if (!postData) {
+			return res.status(404).json({ message: 'No post found with this id' });
+		}
+
+		const commentData = await db.Comment.findAll({
+			where: { post_id },
+			group: ['comment_id'],
+			order: [['createdAt', 'DESC']],
+			attributes: ['comment_content', 'createdAt', 'comment_id'],
+			include: [
+				{
+					model: db.User,
+					attributes: ['name', 'id'],
+				},
+				{
+					model: db.Vote,
+					group: ['vote_type'],
+					attributes: [
+						[
+							db.sequelize.fn(
+								'count',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "like" THEN 1 END'
+								)
+							),
+							'likeCount',
+						],
+						[
+							db.sequelize.fn(
+								'count',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "dislike" THEN 1 END'
+								)
+							),
+							'dislikeCount',
+						],
+					],
+				},
+			],
+		});
+
+		res.status(200).json({
+			postData: postData,
+			commentData: commentData,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
+
+/**
+ * Dang lam do
+ * Trending Score = TotalVoteCount( like and dislike ) * DecayFactor
+ * DecayFactor ( Sau mot khoang thoi gian post het trend ) =  e^( -λ * DaysOld )
+ * Cho λ = ln(1 - day decay rate) , day dacay rate = ? 2% => TrendingScore = TotalVoteCount * 0.9403
+ */
+const getTrendingPosts = async (req, res) => {
+	try {
+		const postData = await db.Post.findAll({
+			where: {},
+			attributes: ['post_title', 'post_content', 'createdAt'],
+			include: [
+				{
+					model: db.User,
+					attributes: ['name', 'id'],
+				},
+				{
+					model: db.Vote,
+					attributes: [
+						[
+							db.sequelize.fn(
+								'COUNT',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "like" THEN 1 END'
+								)
+							),
+							'likeCount',
+						],
+						[
+							db.sequelize.fn(
+								'COUNT',
+								db.sequelize.literal(
+									'CASE WHEN Votes.vote_type = "dislike" THEN 1 END'
+								)
+							),
+							'dislikeCount',
+						],
+					],
+				},
+			],
+		});
+
+		if (!postData) {
+			return res.status(404).json({ message: 'No post found with this id' });
+		}
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const createPostVote = async (req, res) => {
+	try {
+		const { post_id, vote_type } = req.params;
+		const { user_id } = req.body;
+		const comment_id = null;
+
+		const Vote = await db.Vote.findOne({
+			where: {
+				post_id,
+				user_id,
+			},
+
+			attributes: ['vote_type'],
+		});
+
+		if (Vote) {
+			if (Vote.vote_type == vote_type) {
+				await db.Vote.destroy({ where: { post_id } });
+
+				res.status(200).json({
+					message: 'Vote deleted',
+					post_id: post_id,
+				});
+			} else {
+				await db.Vote.update({ vote_type: vote_type }, { where: { post_id } });
+
+				res.status(200).json({
+					originalVote: Vote.vote_type,
+					updatedVote: vote_type,
+				});
+			}
+		} else {
+			await db.Vote.create({
+				vote_type: vote_type,
+				post_id: post_id,
+				user_id: user_id,
+				comment_id: comment_id,
+			});
+
+			res.status(200).json({
+				vote: vote_type,
+				post_id: post_id,
+			});
+		}
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
+
+const getPostVote = async (req, res) => {
+	try {
+		const { post_id } = req.params;
+
+		await db.Vote.findAndCountAll({
+			where: {
+				post_id,
+			},
+			attributes: [],
+
+			group: ['vote_type'],
+		}).then((vote) => {
+			if (vote) {
+				res.status(200).json(vote.count);
+			} else {
+				res.status(404).json({ message: 'No vote found with this post' });
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
+
+const deletePostVote = async (req, res) => {
+	try {
+		const { post_id, user_id } = req.body;
+
+		const Vote = await db.Vote.findOne({
+			where: {
+				user_id,
+				post_id,
+			},
+			attributes: ['vote_id'],
+		});
+
+		if (Vote) {
+			await db.Vote.destroy({
+				where: { vote_id: Vote.vote_id },
+			});
+
+			res.status(200).json({
+				message: 'Vote deleted',
+				vote_id: Vote.vote_id,
+			});
+		} else {
+			res.status(404).json({ message: 'No vote found' });
+		}
+	} catch (err) {
+		console.log(err);
+		res.status(500).json(err);
+	}
+};
 
 module.exports = {
-
-//create post
-create : async (req, res) => {
-
-    try {
-        const newPost = await db.Post.create({ 
-            post_id: req.body.post_id, // auto increment ko can thiet
-            post_title : req.body.post_title,
-            post_content : req.body.post_content, 
-            user_id : req.body.user_id // req.session.user_id??
-        });
-        return res.status(200).json(newPost);
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json(err);
-    }
-},
-
-//update post with auth?
-update : async (req, res) => {
-  const {
-    post_content
-  } = req.body;
-
-  try {
-    const updateResult = await db.Post.update(req.body, {
-        where: {
-            post_id: req.params.post_id,
-        },
-    });
-    return res.status(200).json(updateResult);
-} catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-}
-},
-
-//delete post withAuth
-delete : async (req, res) => {
-    try {
-        const deletePostData = await db.Post.destroy({
-            where: {
-                id: req.body.post_id,
-            },
-        });
-        return res.status(200).json(deletePostData);
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json(err);
-    }
-},
-
-getAll : async (req, res) => {
-    try {
-        const postData = await db.Post.findAll({
-          attributes: ['post_id', 'post_title', 'post_content', 'createdAt'],
-          order: [['createdAt', 'DESC']],
-          
-          include: [
-            /*
-            {
-              model: Tutor,
-              attributes: ['username'],
-            },
-            */
-             
-            {
-              model: Comment,
-              attributes: [
-                'comment_id',
-                'comment_content',
-                'post_id',
-               // 'user_id',
-                'createdAt',
-              ],
-             /* 
-              include: {
-                model: User,
-                attributes: ['username'],
-              },
-              */
-            },
-          ],
-         
-        });
-        
-        if (!postData) {
-            res.status(404).json({ message: 'No post found '});
-            return;
-          }
-        res.status(200).json(postData);
-      } catch (err) {
-        res.status(500).json(err);
-      }
-},
-
-get : async (req, res) => {
-   try {
-       const postData = await db.Post.findOne({
-           where: {
-               post_id: req.params.post_id,
-               
-           },
-           attributes: ['post_id', 'post_content', 'post_title', 'createdAt'],
-           
-           include: [
-            /*
-            {
-              model: User,
-              attributes: ['username'],
-            },
-            */
-            {
-              model: Comment,
-              attributes: [
-                'comment_id',
-                'comment_content',
-                'post_id',
-                //'user_id',
-                'createdAt',
-              ],
-              /*
-              include: {
-                model: User,
-                attributes: ['username'],
-              },
-              */
-            },
-          ],
-          
-       });
-       if (!postData) {
-        res.status(404).json({ message: 'No post found with this id' });
-        return;
-      }
-      res.status(200).json(postData.reverse());
-   } catch (err) {
-    console.log(err);
-    res.status(500).json(err);
-   }
-},
-
-}
-
+	createPost,
+	updatePost,
+	deletePost,
+	findAllPost,
+	findOnePost,
+	getPostVote,
+	deletePostVote,
+	createPostVote,
+	getTrendingPosts,
+};

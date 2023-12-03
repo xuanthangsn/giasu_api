@@ -5,9 +5,10 @@ const isAuth = authMiddleware.isAuth
 
 const ClassController = require('../controllers/classController')
 
-router.get('/get-requestClasses', ClassController.getRequestClasses )
+router.post('/get-requestClasses', ClassController.getRequestClasses )
 router.post('/getTutorsByRequestClassId', ClassController.getTutorsByRequestClassId )
 router.post('/create-class', ClassController.createClass )
 router.post('/update-requestClass-status', ClassController.updateRequestClassStatus )
-router.get('/get_contract/{class_id}', ClassController.getContract);
-module.exports = router;
+router.post('/get-requestClass-by-requestId', ClassController.getRequestClassByRequestId )
+router.post('/get_contract', ClassController.getContract);
+module.exports = router;    

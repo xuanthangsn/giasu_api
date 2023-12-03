@@ -1,40 +1,41 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-	class Comment extends Model {
+	class Vote extends Model {
 		static associate(models) {
-			Comment.belongsTo(models.User, {
+			Vote.belongsTo(models.User, {
 				foreignKey: 'id',
 				targetKey: 'id',
 			});
-			Comment.belongsTo(models.Post, {
+			Vote.belongsTo(models.Post, {
 				foreignKey: 'post_id',
 				targetKey: 'id',
 			});
-			Comment.hasMany(models.Vote, {
+			Vote.belongsTo(models.Comment, {
 				foreignKey: 'comment_id',
+				targetKey: 'id',
 			});
 		}
 	}
-
-	Comment.init(
+	Vote.init(
 		{
 			id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 				primaryKey: true,
 				autoIncrement: true,
-				field: 'comment_id',
+				field: 'vote_id',
 			},
-			comment_content: DataTypes.STRING,
+			vote_type: { type: DataTypes.ENUM('like', 'dislike'), allowNull: false },
 			user_id: DataTypes.INTEGER.UNSIGNED,
 			post_id: DataTypes.INTEGER,
+			comment_id: DataTypes.INTEGER,
 		},
 		{
 			sequelize,
-			tableName: 'comments',
-			modelName: 'Comment',
+			tableName: 'votes',
+			modelName: 'Vote',
 		}
 	);
-	return Comment;
+	return Vote;
 };
