@@ -1,57 +1,106 @@
 require("dotenv").config();
 const db = require("../models/index");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { Sequelize } = require("sequelize");
 const { QueryTypes } = require('sequelize');
-// const Op = require('@sequelize/core');
 const Op = Sequelize.Op
 
-const tutor_register = async(req, res, next) => {
-    const { userId, name, phone, school, specialized, job, expTeach, skillRange, subjects, schedule, description, role, status, gender, birth, address } = req.body;
-    console.log('name: ' + name)
-    const subjectIds = []
-    subjects.forEach(subject => {
-        if (subject.canTeach) {
-            subject.grade.forEach(async g => {
-                try {
-                    const id = await db.Subject.findOne({where: {name: subject.subject, grade: g}})
-                    subjectIds.push(id.id)
-                } catch (err) {
-                    if (!err.statusCode) {
-                        err.statusCode = 501;
-                    }
-                    next(err);  
-                }
-            })
-        }
-    })
-    try {
-        const tutor = await db.Tutor.findOne({where: {userID: userId}})
-        await tutor.update({name, phone, school, specialized, job, expTeach, skillRange, subjectIds: subjectIds.join(','),	schedule, description, role, status, gender, birth, address})
-        // await tutor.update({name: 'quan'})
-        res.json({
-            tutor
-        })
+const getTutorData = async (userId) => {
+    const user = await db.User.findByPk(userId);
+    const tutor = await db.Tutor.findOne({ where: { userID: userId } });
+    return {
+        ...tutor,
+        role: user.role,
+        gender: user.gender,
+        birth: user.birth,
+        phone: user.phone,
+        adderss: user.address
+    };
+}
 
+// use case: bo sung day du thong tin cua tutor
+// grant access if: userId trong req.body trung voi id cua current logged user
+const tutor_register = async (req, res, next) => {
+    const expectedBody = [
+        "userId",
+        "name",
+        "school",
+        "specialized",
+        "job",
+        "expTeach",
+        "skillRange",
+        "subjects",
+        "schedule",
+        "description",
+    ];
+    let updateBody = {};
+    for (key in req.body) {
+        if (expectedBody.includes(key)) {
+            updateBody[key] = req.body[key];
+        }
+    }
+
+    if (updateBody.subjects !== undefined) {
+        const subjectIds = [];
+        subjects.forEach((subject) => {
+            if (subject.canTeach) {
+                subject.grade.forEach(async (g) => {
+                    try {
+                        const id = await db.Subject.findOne({
+                            where: { name: subject.subject, grade: g },
+                        });
+                        subjectIds.push(id.id);
+                    } catch (err) {
+                        if (!err.statusCode) {
+                            err.statusCode = 501;
+                        }
+                        next(err);
+                    }
+                });
+            }
+        });
+        updateBody.subjectIds = subjectIds.join(",");
+    }
+    try {
+        const user = await db.User.findByPk(userID);
+        const tutor = await db.Tutor.findOne({ where: { userID: userID } });
+        await tutor.update(updateBody);
+
+        res.json({
+            tutor: {
+                ...tutor,
+                role: user.role,
+                gender: user.gender,
+                birth: user.birth,
+                phone: user.phone,
+                address: user.address,
+            },
+        });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
     }
-
 }
 
+
+// use case: lay thong tin cua current logged in tutor
+// grant access if: userId trong req.body trung voi id cua current logged user
 const getTutor = async(req, res, next) => {
     const { userID } = req.body
     try {
+        const user = await db.User.findByPk(userID);
         const tutor = await db.Tutor.findOne({where: {userID: userID}})
-        // await tutor.update({name: 'quan'})
         res.json({
-            tutor
-        })
+          tutor: {
+            ...tutor,
+            role: user.role,
+            gender: user.gender,
+            birth: user.birth,
+            phone: user.phone,
+            address: user.address,
+          },
+        });
 
     } catch (err) {
         if (!err.statusCode) {
@@ -61,6 +110,8 @@ const getTutor = async(req, res, next) => {
     }
 }
 
+// use case: given a list of subject's id, return a collection of subject model
+// grant access to: all?
 const getSubjectsOfTutors = async (req, res, next) => {
     const ids = req.body.ids
     
@@ -68,7 +119,7 @@ const getSubjectsOfTutors = async (req, res, next) => {
         return {id : id}
     })
 
-    // const convertIds = [{id: 1}, {id: 2}, {id: 3}, ]
+    // convertIds = [{id: 1}, {id: 2}, {id: 3}, ]
     
     try {
         const subject = await db.Subject.findAll({
@@ -86,6 +137,8 @@ const getSubjectsOfTutors = async (req, res, next) => {
 
 }
 
+// use case: get all tutor where status='confirmed'
+// grant access to: admin?
 const getConfirmedTutors = async (req, res, next) => {
     
     try {
@@ -101,18 +154,13 @@ const getConfirmedTutors = async (req, res, next) => {
     }
 }
 
+//use case: tutor apply to a class
+// grant access if: tutorId trong req.body trung voi id cua current logged user
 const applyClass = async (req, res, next) => {
     const {classId, tutorId} = req.body
     try {
-        const tutor = await db.Tutor.findOne({where: {userID: tutorId}})
+        const tutor = await getTutorData(tutorId);
         const requestClass = await db.RequestClasses.findOne({where: {id: classId}})
-        // console.log('gender: ' + tutor.gender)
-        // console.log('gender: ' + requestClass.requiredGender)
-        // console.log(tutor.gender == requestClass.requiredGender)
-        // console.log('schedule: ' + tutor.subjectIds.split(','))
-        // console.log('schedule: ' + requestClass.subjectIds)
-        // console.log(tutor.subjectIds.split(',').includes(requestClass.subjectIds))
-        // gender - subjectIds - schedule
         if (tutor.gender == requestClass.requiredGender && tutor.subjectIds.split(',').includes(requestClass.subjectIds)) {
             let countSameSchedule = 0
             tutor.schedule.split(',').forEach(session => {
@@ -156,6 +204,8 @@ const applyClass = async (req, res, next) => {
     }
 }
 
+// use case: check if current tutor is applied to a specified class
+// grant access if: tutorId trong req.body trung voi id cua current logged in user
 const checkApplied = async (req, res, next) => {
     const {classId, tutorId} = req.body
     try {
