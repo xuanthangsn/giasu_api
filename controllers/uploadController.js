@@ -32,7 +32,7 @@ const uploadImage = async (req, res, next) => {
         });
     } catch (error) {
         console.log(error);
-        res.send({
+        res.status(500).json({
             message: error.message,
         });
     }
