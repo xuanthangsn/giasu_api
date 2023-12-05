@@ -67,8 +67,6 @@ const getSubjectsOfTutors = async (req, res, next) => {
     const convertIds = ids.split(',').map((id) => {
         return {id : id}
     })
-
-    // const convertIds = [{id: 1}, {id: 2}, {id: 3}, ]
     
     try {
         const subject = await db.Subject.findAll({
@@ -106,13 +104,6 @@ const applyClass = async (req, res, next) => {
     try {
         const tutor = await db.Tutor.findOne({where: {userID: tutorId}})
         const requestClass = await db.RequestClasses.findOne({where: {id: classId}})
-        // console.log('gender: ' + tutor.gender)
-        // console.log('gender: ' + requestClass.requiredGender)
-        // console.log(tutor.gender == requestClass.requiredGender)
-        // console.log('schedule: ' + tutor.subjectIds.split(','))
-        // console.log('schedule: ' + requestClass.subjectIds)
-        // console.log(tutor.subjectIds.split(',').includes(requestClass.subjectIds))
-        // gender - subjectIds - schedule
         if (tutor.gender == requestClass.requiredGender && tutor.subjectIds.split(',').includes(requestClass.subjectIds)) {
             let countSameSchedule = 0
             tutor.schedule.split(',').forEach(session => {
@@ -181,6 +172,45 @@ const checkApplied = async (req, res, next) => {
     }
 }
 
+const getAppliedClassOfTutor = async (req, res, next) => {
+    const { tutorId } = req.body
+    try {
+        const classes = await db.sequelize.query(
+            `SELECT *, tutor_request_classes.id AS t_r_c_id
+            FROM tutor_request_classes 
+            JOIN requestclasses 
+            ON tutor_request_classes.request_class_id = requestclasses.id 
+            Where tutor_id = ${tutorId}`, 
+            {type: QueryTypes.SELECT}
+        )
+        res.json({
+            classes
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+}
+
+const cancelRequestClass = async (req, res, next) => {
+    const {id} = req.body
+    try {
+        await db.tutor_request_class.destroy({
+            where: {id}
+        })
+        res.json({
+            status: 'deleted request'
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+}
 
 
-module.exports = { tutor_register, getTutor, getConfirmedTutors, getSubjectsOfTutors, applyClass, checkApplied }
+
+module.exports = { tutor_register, getTutor, getConfirmedTutors, getSubjectsOfTutors, applyClass, checkApplied, getAppliedClassOfTutor, cancelRequestClass }
