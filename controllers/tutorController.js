@@ -12,7 +12,7 @@ const getTutorData = async (userId) => {
         role: user.role,
         gender: user.gender,
         birth: user.birth,
-        phone: user.phone,
+        phone: user.phone_number,
         adderss: user.address
     };
 }
@@ -71,7 +71,7 @@ const tutor_register = async (req, res, next) => {
                 role: user.role,
                 gender: user.gender,
                 birth: user.birth,
-                phone: user.phone,
+                phone: user.phone_number,
                 address: user.address,
             },
         });
@@ -97,7 +97,7 @@ const getTutor = async(req, res, next) => {
             role: user.role,
             gender: user.gender,
             birth: user.birth,
-            phone: user.phone,
+            phone: user.phone_number,
             address: user.address,
           },
         });
@@ -151,7 +151,7 @@ const getConfirmedTutors = async (req, res, next) => {
             role: user.role,
             gender: user.gender,
             birth: user.birth,
-            phone: user.phone,
+            phone: user.phone_number,
             adderss: user.address,
           });
         }

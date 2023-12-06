@@ -14,7 +14,7 @@ const getConfirmingTutor = async (req, res, next) => {
         role: user.role,
         gender: user.gender,
         birth: user.birth,
-        phone: user.phone,
+        phone: user.phone_number,
         adderss: user.address,
       });
     }
