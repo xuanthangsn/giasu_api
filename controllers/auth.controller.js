@@ -11,6 +11,7 @@ const generateAccessToken = async (payload) => {
   });
 };
 
+// redundant
 const generateRefreshToken = async (user_id) => {
   console.log("Generating refresh token");
   try {
@@ -80,13 +81,13 @@ module.exports = {
 
       const accessToken = await generateAccessToken({ sub: user.id });
 
-      const refreshToken = await generateRefreshToken(user.id);
+      // const refreshToken = await generateRefreshToken(user.id);
 
-      res.cookie("refreshtoken", refreshToken, {
-        httpOnly: true,
-        path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // res.cookie("refreshtoken", refreshToken, {
+      //   httpOnly: true,
+      //   path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
       res.json({
         access_token: accessToken,
@@ -153,7 +154,7 @@ module.exports = {
             throw err;
           }
           break;
-        case "parent":
+        case "parents":
           await db.Parent.create({ user_id: user.id });
           break;
         case "admin":
@@ -163,13 +164,13 @@ module.exports = {
 
       const accessToken = await generateAccessToken({ sub: user.id });
       console.log("access token generated");
-      const refreshToken = await generateRefreshToken(user.id);
-      console.log("refresh token generated");
-      res.cookie("refreshtoken", refreshToken, {
-        httpOnly: true,
-        path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // const refreshToken = await generateRefreshToken(user.id);
+      // console.log("refresh token generated");
+      // res.cookie("refreshtoken", refreshToken, {
+      //   httpOnly: true,
+      //   path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
       res.status(201).json({
         access_token: accessToken,
@@ -191,6 +192,7 @@ module.exports = {
     }
   },
 
+  // redundant
   logout: async (req, res, next) => {
     try {
       res.clearCookie("refreshtoken");
@@ -203,6 +205,7 @@ module.exports = {
     }
   },
 
+  // redundant
   refreshToken: async (req, res, next) => {
     try {
       const refreshToken = req.cookies.refreshtoken;
@@ -242,6 +245,7 @@ module.exports = {
     }
   },
 
+  // redundant
   revokeRefreshToken: async (req, res, next) => {
     try {
       let refreshTokenRecord;
