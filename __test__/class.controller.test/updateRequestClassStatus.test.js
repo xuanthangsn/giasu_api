@@ -17,7 +17,6 @@ describe("update request class status", () => {
 
       await supertest(app)
         .post("/api/class/update-requestClass-status")
-        .send(reqBody)
         .expect(200);
     });
   });
@@ -28,7 +27,6 @@ describe("update request class status", () => {
 
         await supertest(app)
           .post("/api/class/update-requestClass-status")
-          .send(reqBody)
           .expect(500);
     });
   });
@@ -39,7 +37,6 @@ describe("update request class status", () => {
 
         await supertest(app)
           .post("/api/class/update-requestClass-status")
-          .send(reqBody)
           .expect(500);
       });
     });

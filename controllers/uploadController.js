@@ -1,9 +1,7 @@
 require("dotenv").config();
-const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const db = require("../models/index");
 
-const Multer = require("multer");
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,

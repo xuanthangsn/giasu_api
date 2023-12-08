@@ -152,28 +152,6 @@ const createClass = async (req, res, next) => {
 // use case: get the contract given the class information
 const getContract = async (req, res, next) => {
   const classInformation = req.body;
-  // const classInformation = {tutor, parent, classInfo}
-  // lay thong tin ve lop
-  // const classInformation = {
-  //     tutor: {
-  // name: "Tran Xuan Thang",
-  // phone: "0962597636",
-  // birth: "26/12/2002",
-  // address: "Ngo 150, Hoa Bang, Cau Giay, Ha Noi",
-  // job: "Student"
-  //     },
-  //     parent: {
-  // name: "Hoang Phuong Linh",
-  // phone: "0833020475",
-  // address: "Hoang Mai, Cau Giay, Ha Noi"
-  //     },
-  //     class: {
-  // subject: "Toan 7",
-  // schedule: "2b/tuan",
-  // price: "150k/buoi",
-  // time_per_day: "2h/buoi"
-  //     }
-  // };
 
   try {
     const pdfBuffer = await generatePdfContract(classInformation);
@@ -184,7 +162,7 @@ const getContract = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    throw err;
+    next(err);
   }
 };
 
