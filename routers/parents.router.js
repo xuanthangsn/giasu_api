@@ -1,11 +1,4 @@
 const router = require("express").Router();
-const rateLimit = require('express-rate-limit');
-
-const apiLimiter = rateLimit({
-    windowMs: 5 * 1000, // 1 minutes
-    max: 2,
-    message: 'Too many connection',
-});
 
 const authMiddleware = require('../middlewares/auth.middlewares');
 const isAuth = authMiddleware.isAuth
