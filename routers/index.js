@@ -9,6 +9,7 @@ const uploadRoute = require('./upload.router');
 const addressRoute = require('./address.router');
 const postRoute = require('./post.router');
 const commentRoute = require('./comment.router');
+const paymentRoute = require('./payment.router');
 const noticeRoute = require('./notice.router')
 
 const appRoute = express();
@@ -23,6 +24,7 @@ appRoute.use('/upload', uploadRoute);
 appRoute.use('/address', addressRoute);
 appRoute.use('/post', postRoute);
 appRoute.use('/comment', commentRoute);
+appRoute.use('/payment', paymentRoute);
 appRoute.use('/notice', noticeRoute)
 
 module.exports = appRoute;
