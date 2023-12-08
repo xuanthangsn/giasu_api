@@ -1,8 +1,5 @@
 require("dotenv").config();
 const db = require("../models/index");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require("sequelize");
 
 // use case: parent create a request class
@@ -32,6 +29,11 @@ const requestClass = async (req, res, next) => {
     const id = await db.Subject.findOne({
       where: { name: subject, grade: grade },
     });
+    if (!id) {
+      const err = new Error("Subject not found");
+      err.statusCode = 501;
+      throw err;
+    }
     subjectIds = id.id;
     const requestclass = await db.RequestClasses.create({
       parentID,
@@ -110,7 +112,7 @@ const getClasssById = async (req, res, next) => {
     res.json({
       classes,
     });
-  } catch {
+  } catch(err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }

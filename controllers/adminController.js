@@ -9,6 +9,10 @@ const getConfirmingTutor = async (req, res, next) => {
     const tutorData = [];
     for (const tutor of tutors) {
       const user = await db.User.findOne({ where: { id: tutor.userID } });
+      if (!user) {
+        const err = new Error("Database conflict");
+        throw err;
+      }
       tutorData.push({
         ...tutor,
         role: user.role,
@@ -35,6 +39,10 @@ const updateTutorStatus = async (req, res, next) => {
   const { userID, status } = req.body;
   try {
     const tutor = await db.Tutor.findOne({ where: { userID: userID } });
+    if (!tutor) {
+      const err = new Error("No user found");
+      throw err;
+    }
     await tutor.update({ status });
     res.json({
       message: "update tutor status successfully",

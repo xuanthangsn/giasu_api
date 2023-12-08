@@ -3,13 +3,14 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const toLocalDateTime = require("../helpers/toLocalDateTime");
+const generateAccessToken = require("../helpers/generateAccessToken");
 
-const generateAccessToken = async (payload) => {
-  console.log("generating access token");
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXP,
-  });
-};
+// const generateAccessToken = async (payload) => {
+//   console.log("generating access token");
+//   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+//     expiresIn: process.env.ACCESS_TOKEN_EXP,
+//   });
+// };
 
 // redundant
 const generateRefreshToken = async (user_id) => {
@@ -67,7 +68,7 @@ module.exports = {
         err.statusCode = 401;
         err.errors = ["Invalid email"];
         next(err);
-      }        
+      }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -98,7 +99,7 @@ module.exports = {
           phoneNumber: user.phone_number,
           role: user.role,
           gender: user.gender,
-          birth: user.birth
+          birth: user.birth,
         },
       });
     } catch (err) {
@@ -110,16 +111,8 @@ module.exports = {
   },
 
   register: async (req, res, next) => {
-    const {
-      name,
-      email,
-      password,
-      role,
-      gender,
-      birth,
-      phone,
-      address,
-    } = req.body;
+    const { name, email, password, role, gender, birth, phone, address } =
+      req.body;
 
     console.log({
       name,
@@ -130,7 +123,7 @@ module.exports = {
       birth,
       phone,
       address,
-    })
+    });
 
     try {
       const hashPw = await bcrypt.hash(password, 12);
@@ -147,12 +140,7 @@ module.exports = {
 
       switch (role) {
         case "tutor":
-          try {
-            await db.Tutor.create({ userID: user.id });
-          } catch (err) {
-            err.errors = "Error occurs when try to create new tutor";
-            throw err;
-          }
+          await db.Tutor.create({ userID: user.id });
           break;
         case "parents":
           await db.Parent.create({ user_id: user.id });
@@ -181,7 +169,7 @@ module.exports = {
           phoneNumber: user.phone_number,
           role: user.role,
           gender: user.gender,
-          birth: user.birth
+          birth: user.birth,
         },
       });
     } catch (err) {

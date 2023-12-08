@@ -52,6 +52,10 @@ const updateRequestClassStatus = async (req, res, next) => {
   const status = "confirmed";
   try {
     const r_class = await db.RequestClasses.findOne({ where: { id: id } });
+    if (!r_class) {
+      const err = new Error("Class not found");
+      throw err;
+    }
     await r_class.update({ status });
     res.json({
       message: "class updated.",
@@ -75,21 +79,34 @@ const getTutorsByRequestClassId = async (req, res, next) => {
             WHERE tutor_request_classes.request_class_id = ${id};`,
       { type: QueryTypes.SELECT }
     );
-    let tutorData = {};
-    if (tutors.length > 0) {
-      const userId = tutors[0].userID;
-      const user = db.User.findByPk(userId);
-      tutorData = {
-        ...tutors[0],
+    let tutorsData = [];
+
+    for (tutor of tutors) {
+      const user = await db.User.findOne({ where: { id: tutor.userID } });
+      const tutorData = {
+        ...tutor,
         role: user.role,
         gender: user.gender,
         birth: user.birth,
         phone: user.phone_number,
         adderss: user.address,
       };
+      tutorsData.push(tutorData);
     }
+    // if (tutors.length > 0) {
+    //   const userId = tutors[0].userID;
+    //   const user = db.User.findByPk(userId);
+    //   tutorsData = {
+    //     ...tutors[0],
+    //     role: user.role,
+    //     gender: user.gender,
+    //     birth: user.birth,
+    //     phone: user.phone_number,
+    //     adderss: user.address,
+    //   };
+    // }
     res.json({
-      tutors: tutorData,
+      tutors: tutorsData,
     });
   } catch (err) {
     if (!err.statusCode) {

@@ -5,7 +5,7 @@ const isAuth = authMiddleware.isAuth
 
 const AdminController = require('../controllers/adminController')
 
-router.get('/get-confirming-tutor', isAuth, AdminController.getConfirmingTutor )
-router.post('/update-tutor-status', isAuth, AdminController.updateTutorStatus )
+router.get('/get-confirming-tutor', AdminController.getConfirmingTutor )
+router.post('/update-tutor-status', AdminController.updateTutorStatus )
 
 module.exports = router;
