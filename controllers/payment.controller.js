@@ -23,7 +23,7 @@ const createPaymentURL = async (req, res, next) => {
 
 	const tmnCode = 'XUX312T2';
 	const secretKey = 'ICNHBRDRYHXCHYTIMSHLOWIYENTNNZMY';
-	const returnUrl = 'http://localhost:3000/api/payment/vnpay_return';
+	const returnUrl = 'https://giasu.onrender.com/api/payment/vnpay_return';
 	var vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
 
 	const date = new Date();
