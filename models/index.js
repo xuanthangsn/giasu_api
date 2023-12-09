@@ -10,7 +10,7 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
-sequelize
+await sequelize
 	.authenticate()
 	.then(() => {
 		console.log('Connection has been established successfully.');
