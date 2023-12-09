@@ -35,7 +35,9 @@ module.exports = {
 				allowNull: false,
 				type: Sequelize.DATEONLY,
 			},
-		});
+		},{
+			freezeTableName: true,
+		 });
 	},
 	async down(queryInterface, Sequelize) {
 		await queryInterface.dropTable('Posts');

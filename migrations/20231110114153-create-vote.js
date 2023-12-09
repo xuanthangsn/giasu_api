@@ -58,6 +58,7 @@ module.exports = {
 						fields: ['user_id', 'post_id', 'comment_id'],
 					},
 				},
+				freezeTableName: true,
 			}
 		);
 	},
