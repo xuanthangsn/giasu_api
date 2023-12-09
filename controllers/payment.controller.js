@@ -1,4 +1,4 @@
-const VietQR = require('vietqr');
+//const VietQR = require('vietqr');
 //Vnpay
 const querystring = require('qs');
 const crypto = require('crypto');
@@ -290,6 +290,4 @@ module.exports = {
 	createPaymentURL,
 	vnpayIpn,
 	vnpayReturn,
-	bankTransfer,
-	userPaid,
 };
