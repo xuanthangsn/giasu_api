@@ -1,19 +1,28 @@
 
 ## Getting Started
 
-init package
+Chạy server ở local:
 
 ```bash
-npm init
+# Tải các package
+npm install
 
-sequelize init
+#Tạo database
+npx sequelize-cli db:create
 
+# Chạy các migrations (tạo bảng)
 - run migrations: 
 npx sequelize-cli db:migrate
 
+# Khởi tạo dữ liệu có sẵn
 - run seeder:
 npx sequelize-cli db:seed:all
 
+# Khởi tạo CSDL đơn vị hành chính: chạy các file 
+# CreateTables_vn_units.sql và ImportData_vn_units.sql trong ./assets/vietnamese-provinces-database
+# (Có thể dùng MySQL Workbench hoặc các phần mềm tương tự)
+
+# Chạy server
 - start:
 npm start
 
@@ -24,34 +33,23 @@ npm start
 - config/config.son:
 ```
 {
-  "development": {
-    "username": [your username],
-    "password": [your password],
-    "database": "giasu_api",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "test": {
-    "username": [your username],
-    "password": [your password],
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "production": {
-    "username": [your username],
-    "password": [your password],
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  }
+	"development": {
+		"username": "root",
+		"password": [Your local Mysql root password],
+		"database": "giasu_api",
+		"host": "127.0.0.1",
+		"dialect": "mysql"
+	},
+	"production": {
+		"use_env_variable": "DATABASE_URL"
+	}
 }
 ```
 
 - .env:
 
 ```
-PORT=3000
+PORT=10000
 ACCESS_TOKEN_SECRET="anything"
 REFRESH_TOKEN_SECRET="anything"
 ACCESS_TOKEN_EXP="3h"
