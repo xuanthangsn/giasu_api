@@ -7,15 +7,14 @@ jest.mock("../../models/index");
 describe("find one post", () => {
   describe("post found", () => {
     it("200 status code", async () => {
-      jest.mocked(db.Post.findOne).mockResolvedValue({});
-      jest.mocked(db.Comment.findAll).mockResolvedValue({});
+      jest.mocked(db.sequelize.query).mockResolvedValue({});
       await supertest(app).get("/api/post/1").expect(200);
     });
   });
 
   describe("no post found", () => {
     it("404 status code", async () => {
-      jest.mocked(db.Post.findOne).mockResolvedValue();
+      jest.mocked(db.sequelize.query).mockResolvedValue();
 
       await supertest(app).get("/api/post/1").expect(404);
     });
@@ -23,7 +22,7 @@ describe("find one post", () => {
 
   describe("error when try to query", () => {
     it("500 status code", async () => {
-      jest.mocked(db.Post.findOne).mockRejectedValue(new Error());
+      jest.mocked(db.sequelize.query).mockRejectedValue(new Error());
 
       await supertest(app).get("/api/post/1").expect(500);
     });

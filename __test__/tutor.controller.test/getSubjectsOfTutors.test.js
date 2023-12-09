@@ -10,7 +10,7 @@ jest.mock("../../models/index");
 describe("get subjects of tutor", () => {
   describe("no error", () => {
     it("200 status code", async () => {
-      jest.mocked(db.Subject.findAll).mockResolvedValue({});
+      jest.mocked(db.sequelize.query).mockResolvedValue({});
       await supertest(app)
         .post("/api/tutor/getSubjectsOfTutors")
         .send({ ids: "1, 2, 3, 4" })
@@ -20,7 +20,7 @@ describe("get subjects of tutor", () => {
 
   describe("failed to query", () => {
     it("500 status code", async () => {
-      jest.mocked(db.Subject.findAll).mockRejectedValue(new Error());
+      jest.mocked(db.sequelize.query).mockRejectedValue(new Error());
       await supertest(app)
         .post("/api/tutor/getSubjectsOfTutors")
         .send({ ids: "1, 2, 3, 4" })
