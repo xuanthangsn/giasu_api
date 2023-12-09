@@ -180,7 +180,7 @@ const findOnePost = async (req, res) => {
 		}
 
 		const commentData = await db.sequelize.query(
-			`SELECT comments.*, COALESCE(likeCounts.likeCount, 0) AS likeCount
+			`SELECT comments.*, users.name, COALESCE(likeCounts.likeCount, 0) AS likeCount
 			FROM comments
 			LEFT JOIN (
 				SELECT comments.comment_id, COUNT(*) AS likeCount
@@ -189,6 +189,7 @@ const findOnePost = async (req, res) => {
 				WHERE votes.vote_type = 'like'
 				GROUP BY comments.comment_id
 			) AS likeCounts ON comments.comment_id = likeCounts.comment_id
+			JOIN users ON users.id = comments.user_id
 			WHERE comments.post_id = ${post_id};`,
 			{type: QueryTypes.SELECT}
 		)

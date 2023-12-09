@@ -9,11 +9,17 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
-sequelize = new Sequelize('giasu_api', 'root', '', {
-	host: '0.0.0.0',
-	dialect: 'mysql',
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+	dialect: 'postgres',
 });
+sequelize
+	.authenticate()
+	.then(() => {
+		console.log('Connection has been established successfully.');
+	})
+	.catch((err) => {
+		console.error('Unable to connect to the database:', err);
+	});
 
 fs.readdirSync(__dirname)
 	.filter((file) => {

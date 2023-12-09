@@ -57,6 +57,9 @@ module.exports = {
       salary: {
         type: Sequelize.INTEGER
       },
+      requestTutorId: {
+        type: Sequelize.INTEGER
+      },
       otherRequirement: {
         type: Sequelize.TEXT
       },

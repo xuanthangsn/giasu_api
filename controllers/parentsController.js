@@ -6,7 +6,7 @@ const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require('sequelize');
 
 const requestClass = async(req, res, next) => {
-    const { parentID, parentName, phone, studentGender, requiredGender, address, detailAddress, grade, subject, skill, studentCharacter, schedule, frequency, salary, otherRequirement, status } = req.body
+    const { parentID, parentName, phone, studentGender, requiredGender, address, detailAddress, grade, subject, skill, studentCharacter, schedule, frequency, salary, otherRequirement, status, requestTutorId } = req.body
     let subjectIds 
     try{
         const id = await db.Subject.findOne({where: {name: subject, grade: grade}})
@@ -29,7 +29,8 @@ const requestClass = async(req, res, next) => {
                 salary, 
                 otherRequirement, 
                 status,
-                subjectIds
+                subjectIds,
+                requestTutorId
             }
         )
         return res.status(200).json({ message: 'Request class successfully' });
@@ -61,7 +62,7 @@ const getRequestClassesOfParents = async (req, res, next) => {
         const classes = await db.sequelize.query(`SELECT *, requestclasses.id as reqId
             FROM requestclasses 
             JOIN subjects ON requestclasses.subjectIds = subjects.id 
-            WHERE parentID = ${parentID} AND requestclasses.status='confirming'`,
+            WHERE parentID = ${parentID} AND (requestclasses.status='confirming' OR requestclasses.status='wait-for-tutor')`,
             {type: QueryTypes.SELECT}
         )
         console.log(classes)
