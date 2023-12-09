@@ -1,8 +1,5 @@
 require("dotenv").config();
 const db = require("../models/index");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const toLocalDateTime = require("../helpers/toLocalDateTime");
 const { QueryTypes } = require("sequelize");
 
 const getProvinces = async (req, res, next) => {
@@ -16,7 +13,7 @@ const getProvinces = async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 501;
+      err.statusCode = 500;
     }
     next(err);
   }
@@ -40,7 +37,7 @@ const getDistricts = async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 501;
+      err.statusCode = 500;
     }
     next(err);
   }
@@ -63,7 +60,7 @@ const getWards = async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 501;
+      err.statusCode = 500;
     }
     next(err);
   }
@@ -84,7 +81,7 @@ const getFullAddress = async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 501;
+      err.statusCode = 500;
     }
     next(err);
   }

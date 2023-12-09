@@ -3,14 +3,16 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const toLocalDateTime = require("../helpers/toLocalDateTime");
+const generateAccessToken = require("../helpers/generateAccessToken");
 
-const generateAccessToken = async (payload) => {
-  console.log("generating access token");
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: process.env.ACCESS_TOKEN_EXP,
-  });
-};
+// const generateAccessToken = async (payload) => {
+//   console.log("generating access token");
+//   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+//     expiresIn: process.env.ACCESS_TOKEN_EXP,
+//   });
+// };
 
+// redundant
 const generateRefreshToken = async (user_id) => {
   console.log("Generating refresh token");
   try {
@@ -66,7 +68,7 @@ module.exports = {
         err.statusCode = 401;
         err.errors = ["Invalid email"];
         next(err);
-      }        
+      }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -80,13 +82,13 @@ module.exports = {
 
       const accessToken = await generateAccessToken({ sub: user.id });
 
-      const refreshToken = await generateRefreshToken(user.id);
+      // const refreshToken = await generateRefreshToken(user.id);
 
-      res.cookie("refreshtoken", refreshToken, {
-        httpOnly: true,
-        path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // res.cookie("refreshtoken", refreshToken, {
+      //   httpOnly: true,
+      //   path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
       res.json({
         access_token: accessToken,
@@ -97,7 +99,7 @@ module.exports = {
           phoneNumber: user.phone_number,
           role: user.role,
           gender: user.gender,
-          birth: user.birth
+          birth: user.birth,
         },
       });
     } catch (err) {
@@ -109,16 +111,8 @@ module.exports = {
   },
 
   register: async (req, res, next) => {
-    const {
-      name,
-      email,
-      password,
-      role,
-      gender,
-      birth,
-      phone,
-      address,
-    } = req.body;
+    const { name, email, password, role, gender, birth, phone, address } =
+      req.body;
 
     console.log({
       name,
@@ -129,7 +123,7 @@ module.exports = {
       birth,
       phone,
       address,
-    })
+    });
 
     try {
       const hashPw = await bcrypt.hash(password, 12);
@@ -146,14 +140,9 @@ module.exports = {
 
       switch (role) {
         case "tutor":
-          try {
-            await db.Tutor.create({ userID: user.id });
-          } catch (err) {
-            err.errors = "Error occurs when try to create new tutor";
-            throw err;
-          }
+          await db.Tutor.create({ userID: user.id });
           break;
-        case "parent":
+        case "parents":
           await db.Parent.create({ user_id: user.id });
           break;
         case "admin":
@@ -163,13 +152,13 @@ module.exports = {
 
       const accessToken = await generateAccessToken({ sub: user.id });
       console.log("access token generated");
-      const refreshToken = await generateRefreshToken(user.id);
-      console.log("refresh token generated");
-      res.cookie("refreshtoken", refreshToken, {
-        httpOnly: true,
-        path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      // const refreshToken = await generateRefreshToken(user.id);
+      // console.log("refresh token generated");
+      // res.cookie("refreshtoken", refreshToken, {
+      //   httpOnly: true,
+      //   path: ["api/auth/refresh_token", "api/auth/revoke_refresh_token"],
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      // });
 
       res.status(201).json({
         access_token: accessToken,
@@ -180,7 +169,7 @@ module.exports = {
           phoneNumber: user.phone_number,
           role: user.role,
           gender: user.gender,
-          birth: user.birth
+          birth: user.birth,
         },
       });
     } catch (err) {
@@ -191,6 +180,7 @@ module.exports = {
     }
   },
 
+  // redundant
   logout: async (req, res, next) => {
     try {
       res.clearCookie("refreshtoken");
@@ -203,6 +193,7 @@ module.exports = {
     }
   },
 
+  // redundant
   refreshToken: async (req, res, next) => {
     try {
       const refreshToken = req.cookies.refreshtoken;
@@ -242,6 +233,7 @@ module.exports = {
     }
   },
 
+  // redundant
   revokeRefreshToken: async (req, res, next) => {
     try {
       let refreshTokenRecord;

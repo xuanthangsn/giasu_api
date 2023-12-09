@@ -1,9 +1,7 @@
 require("dotenv").config();
-const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const db = require("../models/index");
 
-const Multer = require("multer");
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -32,7 +30,7 @@ const uploadImage = async (req, res, next) => {
         });
     } catch (error) {
         console.log(error);
-        res.send({
+        res.status(500).json({
             message: error.message,
         });
     }
