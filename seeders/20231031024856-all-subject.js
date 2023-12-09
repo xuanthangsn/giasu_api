@@ -30,7 +30,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   await queryInterface.bulkInsert('Subjects', subjects(), {})
+    await queryInterface.bulkInsert('Subjects', subjects())
   },
 
   async down (queryInterface, Sequelize) {

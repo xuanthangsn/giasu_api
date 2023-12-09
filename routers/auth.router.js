@@ -5,8 +5,11 @@ const authMiddleware = require('../middlewares/auth.middlewares');
 const isAuth = authMiddleware.isAuth
 
 router.get("/test", (req, res, next) => {
-  const refreshToken = req.cookies.refreshtoken;
-  res.json({ refreshToken });
+  const { name } = req.body;
+  res.json({
+    message: "success",
+    name
+  });
 });
 router.post("/register", authController.register);
 router.post("/login", authController.login);

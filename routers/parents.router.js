@@ -5,8 +5,8 @@ const isAuth = authMiddleware.isAuth
 
 const parentsController = require('../controllers/parentsController')
 
-router.post('/requestClass', isAuth, parentsController.requestClass )
-router.post('/get-requestClass-of-parents', isAuth, parentsController.getRequestClassesOfParents )
-router.post('/get-class-by-id', isAuth, parentsController.getClasssById)
-
+router.post('/requestClass', parentsController.requestClass )
+router.post('/get-requestClass-of-parents', parentsController.getRequestClassesOfParents )
+router.post('/get-class-by-id', parentsController.getClasssById)
+router.get('/getAllRequestClass', parentsController.getRequestClasses);
 module.exports = router;
