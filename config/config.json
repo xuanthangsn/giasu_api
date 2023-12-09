@@ -7,10 +7,6 @@
 		"dialect": "mysql"
 	},
 	"production": {
-		"username": "root",
-		"password": "mCAGWdjWglgZ2Qz40wr2Q1XLrjg2dVVf",
-		"database": "giasu_api",
-		"host": "0.0.0.0",
-		"dialect": "postgres"
+		"use_env_variable": "DATABASE_URL"
 	}
 }
